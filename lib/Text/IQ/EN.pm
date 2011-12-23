@@ -3,6 +3,32 @@ use strict;
 use warnings;
 use base 'Text::IQ';
 
+sub num_misspellings {
+    my $self = shift;
+    return $self->{_num_misspelled} if defined $self->{_num_misspelled};
+    my $checker = Search::Tools::SpellCheck->new( lang => 'en_US', );
+    my $aspell = $checker->aspell;
+    my @errs;
+    my $n = 0;
+    while ( my $t = $self->{_tokens}->next ) {
+        if ( $t->is_match ) {
+            if ( !$aspell->check("$t") ) {
+                push @errs, "$t";
+                $n++;
+            }
+        }
+    }
+    $self->{_misspelled}     = \@errs;
+    $self->{_num_misspelled} = $n;
+    $self->{_tokens}->reset;
+    return $self->{_num_misspelled};
+}
+
+sub misspelled {
+    my $self = shift;
+    return $self->{_misspelled} if defined $self->{_misspelled};
+}
+
 1;
 
 __END__

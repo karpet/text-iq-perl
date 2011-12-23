@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Search::Tools::Tokenizer;
 use Search::Tools::UTF8;
-use Search::Tools::Spellchecker;
+use Search::Tools::SpellCheck;
 use File::Slurp;
 
 our $VERSION = '0.001';
@@ -47,6 +47,55 @@ sub new {
     my $tokenizer = Search::Tools::Tokenizer->new();
     $self->{_tokens} = $tokenizer->tokenize( $self->{_text} );
     return $self;
+}
+
+sub num_words {
+    my $self = shift;
+    return $self->{_tokens}->num_matches;
+}
+
+sub word_length {
+    my $self = shift;
+    return $self->{_word_len} if defined $self->{_word_len};
+    my $n_words   = 0;
+    my $total_len = 0;
+    for my $t ( @{ $self->{_tokens}->matches } ) {
+        $total_len += $t->u8len;
+        $n_words++;
+    }
+    $self->{_word_len} = $total_len / $n_words;
+    return $self->{_word_len};
+}
+
+sub num_sentences {
+    my $self = shift;
+    return $self->{_num_sentences} if defined $self->{_num_sentences};
+    my $n = 0;
+    while ( my $t = $self->{_tokens}->next ) {
+        $n += $t->is_sentence_start;
+    }
+    $self->{_tokens}->reset;
+    $self->{_num_sentences} = $n;
+    return $n;
+}
+
+sub sentence_length {
+    my $self = shift;
+    return $self->{_sentence_len} if defined $self->{_sentence_len};
+    my $n         = 0;
+    my $total_len = 0;
+    my $len       = 0;
+    while ( my $t = $self->{_tokens}->next ) {
+        if ( $t->is_sentence_start ) {
+            $total_len += $len;
+            $len = 0;
+            $n++;
+        }
+        $len += $t->is_match;
+    }
+    $self->{_sentence_len} = $total_len / $n;
+    $self->{_tokens}->reset;
+    return $self->{_sentence_len};
 }
 
 1;
