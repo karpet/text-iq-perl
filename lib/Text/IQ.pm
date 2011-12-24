@@ -7,6 +7,8 @@ use Search::Tools::Tokenizer;
 use Search::Tools::UTF8;
 use Search::Tools::SpellCheck;
 use File::Slurp;
+use Data::Dump qw( dump );
+use Scalar::Util qw( blessed );
 
 our $VERSION = '0.001';
 
@@ -33,8 +35,14 @@ Text::IQ - naive intelligence about a body of text
 
 sub new {
     my $class = shift;
-    my $self  = bless {}, $class;
-    my $text  = shift;
+    my $self  = bless {
+        num_words             => 0,
+        total_word_length     => 0,
+        num_sentences         => 0,
+        total_sentence_length => 0,
+        tmp_sent_len          => 0,
+    }, $class;
+    my $text = shift;
     if ( !defined $text ) {
         croak "text required";
     }
@@ -45,58 +53,32 @@ sub new {
         $self->{_text} = to_utf8( scalar read_file($text) );
     }
     my $tokenizer = Search::Tools::Tokenizer->new();
-    $self->{_tokens} = $tokenizer->tokenize( $self->{_text} );
+    $self->{_tokens}
+        = $tokenizer->tokenize( $self->{_text}, sub { $self->examine(@_) }, );
+    $self->{avg_word_length}
+        = $self->{total_word_length} / $self->{num_words};
+    $self->{avg_sentence_length}
+        = $self->{total_sentence_length} / $self->{num_sentences};
     return $self;
 }
 
-sub num_words {
-    my $self = shift;
-    return $self->{_tokens}->num_matches;
+sub examine {
+    my $self  = shift;
+    my $token = shift;
+    $self->{num_words}++;
+    $self->{total_word_length} += $token->u8len;
+    if ( $token->is_sentence_start ) {
+        $self->{num_sentences}++;
+        $self->{total_sentence_length} += $self->{tmp_sent_len};
+        $self->{tmp_sent_len} = 0;
+    }
+    $self->{tmp_sent_len}++;
 }
 
-sub word_length {
-    my $self = shift;
-    return $self->{_word_len} if defined $self->{_word_len};
-    my $n_words   = 0;
-    my $total_len = 0;
-    for my $t ( @{ $self->{_tokens}->matches } ) {
-        $total_len += $t->u8len;
-        $n_words++;
-    }
-    $self->{_word_len} = $total_len / $n_words;
-    return $self->{_word_len};
-}
-
-sub num_sentences {
-    my $self = shift;
-    return $self->{_num_sentences} if defined $self->{_num_sentences};
-    my $n = 0;
-    while ( my $t = $self->{_tokens}->next ) {
-        $n += $t->is_sentence_start;
-    }
-    $self->{_tokens}->reset;
-    $self->{_num_sentences} = $n;
-    return $n;
-}
-
-sub sentence_length {
-    my $self = shift;
-    return $self->{_sentence_len} if defined $self->{_sentence_len};
-    my $n         = 0;
-    my $total_len = 0;
-    my $len       = 0;
-    while ( my $t = $self->{_tokens}->next ) {
-        if ( $t->is_sentence_start ) {
-            $total_len += $len;
-            $len = 0;
-            $n++;
-        }
-        $len += $t->is_match;
-    }
-    $self->{_sentence_len} = $total_len / $n;
-    $self->{_tokens}->reset;
-    return $self->{_sentence_len};
-}
+sub num_words       { shift->{num_words} }
+sub num_sentences   { shift->{num_sentences} }
+sub word_length     { shift->{avg_word_length} }
+sub sentence_length { shift->{avg_sentence_length} }
 
 1;
 

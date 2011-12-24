@@ -5,7 +5,7 @@ use base 'Text::IQ';
 
 sub num_misspellings {
     my $self = shift;
-    return $self->{_num_misspelled} if defined $self->{_num_misspelled};
+    return $self->{num_misspelled} if defined $self->{num_misspelled};
     my $checker = Search::Tools::SpellCheck->new( lang => 'en_US', );
     my $aspell = $checker->aspell;
     my @errs;
@@ -18,15 +18,15 @@ sub num_misspellings {
             }
         }
     }
-    $self->{_misspelled}     = \@errs;
-    $self->{_num_misspelled} = $n;
+    $self->{misspelled}     = \@errs;
+    $self->{num_misspelled} = $n;
     $self->{_tokens}->reset;
-    return $self->{_num_misspelled};
+    return $self->{num_misspelled};
 }
 
 sub misspelled {
     my $self = shift;
-    return $self->{_misspelled} if defined $self->{_misspelled};
+    return $self->{misspelled} if defined $self->{misspelled};
 }
 
 1;
