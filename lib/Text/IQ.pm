@@ -6,9 +6,9 @@ use Carp;
 use Search::Tools::Tokenizer;
 use Search::Tools::UTF8;
 use Search::Tools::SpellCheck;
-use File::Slurp;
+use Scalar::Util qw( openhandle );
+use File::Basename;
 use Data::Dump qw( dump );
-use Scalar::Util qw( blessed );
 
 our $VERSION = '0.001';
 
@@ -41,6 +41,8 @@ sub new {
         num_sentences         => 0,
         total_sentence_length => 0,
         tmp_sent_len          => 0,
+        num_syllables         => 0,
+        num_complex_words     => 0,
     }, $class;
     my $text = shift;
     if ( !defined $text ) {
@@ -50,7 +52,7 @@ sub new {
         $self->{_text} = to_utf8($$text);
     }
     else {
-        $self->{_text} = to_utf8( scalar read_file($text) );
+        $self->{_text} = to_utf8( Search::Tools->slurp($text) );
     }
     my $tokenizer = Search::Tools::Tokenizer->new();
     $self->{_tokens}
@@ -67,6 +69,11 @@ sub examine {
     my $token = shift;
     $self->{num_words}++;
     $self->{total_word_length} += $token->u8len;
+    my $syll = $self->get_num_syllables("$token");
+    $self->{num_syllables} += $syll;
+    if ( $syll > 2 and $token !~ m/\-/ ) {
+        $self->{num_complex_words}++;
+    }
     if ( $token->is_sentence_start ) {
         $self->{num_sentences}++;
         $self->{total_sentence_length} += $self->{tmp_sent_len};
@@ -75,10 +82,37 @@ sub examine {
     $self->{tmp_sent_len}++;
 }
 
-sub num_words       { shift->{num_words} }
-sub num_sentences   { shift->{num_sentences} }
-sub word_length     { shift->{avg_word_length} }
-sub sentence_length { shift->{avg_sentence_length} }
+sub num_words           { shift->{num_words} }
+sub num_sentences       { shift->{num_sentences} }
+sub avg_word_length     { shift->{avg_word_length} }
+sub avg_sentence_length { shift->{avg_sentence_length} }
+sub num_complex_words   { shift->{num_complex_words} }
+sub num_syllables       { shift->{num_syllables} }
+
+# see http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_test
+# and http://www.plainlanguage.com/Resources/readability.html
+# and Lingua::EN::Fathom
+
+sub flesch {
+    my $self = shift;
+    return
+          206.835
+        - ( 1.015 * ( $self->{num_words} / $self->{num_sentences} ) )
+        - ( 84.6 *  ( $self->{num_syllables} / $self->{num_words} ) );
+}
+
+sub fog {
+    my $self = shift;
+    return ( ( $self->{num_words} / $self->{num_sentences} )
+        + ( ( $self->{num_complex_words} / $self->{num_words} ) * 100 ) )
+        * 0.4;
+}
+
+sub kincaid {
+    my $self = shift;
+    return ( 11.8 * ( $self->{num_syllables} / $self->{num_words} ) )
+        + ( 0.39 * ( $self->{num_words} / $self->{num_sentences} ) ) - 15.59;
+}
 
 1;
 

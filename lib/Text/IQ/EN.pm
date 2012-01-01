@@ -2,6 +2,15 @@ package Text::IQ::EN;
 use strict;
 use warnings;
 use base 'Text::IQ';
+use Lingua::EN::Syllable;
+
+my %syllable_cache;
+
+sub get_num_syllables {
+    return $syllable_cache{ $_[1] } if exists $syllable_cache{ $_[1] };
+    $syllable_cache{ $_[1] } = syllable( $_[1] );
+    return $syllable_cache{ $_[1] };
+}
 
 sub num_misspellings {
     my $self = shift;
@@ -9,19 +18,29 @@ sub num_misspellings {
     my $checker = Search::Tools::SpellCheck->new( lang => 'en_US', );
     my $aspell = $checker->aspell;
     my @errs;
+    my %uniq;
     my $n = 0;
     while ( my $t = $self->{_tokens}->next ) {
+
         if ( $t->is_match ) {
             if ( !$aspell->check("$t") ) {
                 push @errs, "$t";
+                $uniq{"$t"}++;
                 $n++;
             }
         }
     }
-    $self->{misspelled}     = \@errs;
-    $self->{num_misspelled} = $n;
+    $self->{misspelled}          = \@errs;
+    $self->{num_uniq_misspelled} = scalar keys %uniq;
+    $self->{num_misspelled}      = $n;
     $self->{_tokens}->reset;
     return $self->{num_misspelled};
+}
+
+sub num_uniq_misspellings {
+    my $self = shift;
+    $self->num_misspellings;
+    return $self->{num_uniq_misspelled};
 }
 
 sub misspelled {

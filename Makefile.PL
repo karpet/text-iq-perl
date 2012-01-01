@@ -21,8 +21,9 @@ WriteMakefile(
         : () ),
     PL_FILES  => {},
     PREREQ_PM => {
-        'Test::More'    => 0,
-        'Search::Tools' => '0.67',
+        'Test::More'           => 0,
+        'Search::Tools'        => '0.67',
+        'Lingua::EN::Syllable' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Text-IQ-*' },
