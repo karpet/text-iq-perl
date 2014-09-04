@@ -6,11 +6,37 @@ use Lingua::EN::Syllable;
 
 my %syllable_cache;
 
+=head1 NAME
+
+Text::IQ::EN - Text::IQ for English
+
+=head1 SYNOPSIS
+
+ # see Text::IQ
+
+=head1 METHODS
+
+This class extends L<Text::IQ>. Only new or overridden methods are documented here.
+
+=cut
+
+=head2 get_num_syllables
+
+Returns number of syllables in the text.
+
+=cut
+
 sub get_num_syllables {
     return $syllable_cache{ $_[1] } if exists $syllable_cache{ $_[1] };
     $syllable_cache{ $_[1] } = syllable( $_[1] );
     return $syllable_cache{ $_[1] };
 }
+
+=head2 num_misspellings
+
+Returns the number of misspelled words, according to L<Search::Tools::SpellCheck>.
+
+=cut
 
 sub num_misspellings {
     my $self = shift;
@@ -37,11 +63,23 @@ sub num_misspellings {
     return $self->{num_misspelled};
 }
 
+=head2 num_uniq_misspellings
+
+Returns the number of unique misspelled words.
+
+=cut
+
 sub num_uniq_misspellings {
     my $self = shift;
     $self->num_misspellings;
     return $self->{num_uniq_misspelled};
 }
+
+=head2 misspelled
+
+Returns the list of misspelled words.
+
+=cut
 
 sub misspelled {
     my $self = shift;
