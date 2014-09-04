@@ -221,7 +221,7 @@ L<http://search.cpan.org/dist/Text-IQ/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2011 Peter Karman.
+Copyright 2014 Peter Karman.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
