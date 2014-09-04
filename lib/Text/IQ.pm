@@ -33,6 +33,18 @@ Text::IQ - naive intelligence about a body of text
 
 =cut
 
+=head1 METHODS
+
+=head2 new( I<path/to/file> )
+
+=head2 new( I<scalar_ref> )
+
+Constructor method. Returns Text::IQ object. Single argument
+is either the path to a file or a reference to a simple scalar
+string.
+
+=cut
+
 sub new {
     my $class = shift;
     my $self  = bless {
@@ -56,7 +68,8 @@ sub new {
     }
     my $tokenizer = Search::Tools::Tokenizer->new();
     $self->{_tokens}
-        = $tokenizer->tokenize( $self->{_text}, sub { $self->examine(@_) }, );
+        = $tokenizer->tokenize( $self->{_text}, sub { $self->_examine(@_) },
+        );
     $self->{avg_word_length}
         = $self->{total_word_length} / $self->{num_words};
     $self->{avg_sentence_length}
@@ -64,7 +77,7 @@ sub new {
     return $self;
 }
 
-sub examine {
+sub _examine {
     my $self  = shift;
     my $token = shift;
     $self->{num_words}++;
@@ -82,6 +95,38 @@ sub examine {
     $self->{tmp_sent_len}++;
 }
 
+=head2 get_sentences
+
+Wrapper around the L<Search::Tools::TokenList> as_sentences() method.
+Passes through the same arguments as as_sentences().
+
+=head2 num_words
+
+Returns the number of words in the text.
+
+=head2 num_sentences
+
+Returns the number of sentences in the text.
+
+=head2 avg_word_length
+
+Returns the average number of characters in each word.
+
+=head2 avg_sentence_length
+
+Returns the average length of each sentence.
+
+=head2 num_complex_words
+
+Returns the number of words with more than 2 syllables.
+
+=head2 num_syllables
+
+Returns the total number of syllables in the text.
+
+=cut
+
+sub get_sentences       { shift->{_tokens}->as_sentences(@_) }
 sub num_words           { shift->{num_words} }
 sub num_sentences       { shift->{num_sentences} }
 sub avg_word_length     { shift->{avg_word_length} }
@@ -93,6 +138,12 @@ sub num_syllables       { shift->{num_syllables} }
 # and http://www.plainlanguage.com/Resources/readability.html
 # and Lingua::EN::Fathom
 
+=head2 flesch
+
+Returns the Flesch score per L<http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_test>.
+
+=cut
+
 sub flesch {
     my $self = shift;
     return
@@ -101,12 +152,24 @@ sub flesch {
         - ( 84.6 *  ( $self->{num_syllables} / $self->{num_words} ) );
 }
 
+=head2 fog
+
+Returns the Fog score per L<http://www.plainlanguage.com/Resources/readability.html>.
+
+=cut
+
 sub fog {
     my $self = shift;
     return ( ( $self->{num_words} / $self->{num_sentences} )
         + ( ( $self->{num_complex_words} / $self->{num_words} ) * 100 ) )
         * 0.4;
 }
+
+=head2 kincaid
+
+Returns the Kincaid score per L<http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_test>.
+
+=cut
 
 sub kincaid {
     my $self = shift;

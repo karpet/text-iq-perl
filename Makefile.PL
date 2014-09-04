@@ -22,7 +22,7 @@ WriteMakefile(
     PL_FILES  => {},
     PREREQ_PM => {
         'Test::More'           => 0,
-        'Search::Tools'        => '0.67',
+        'Search::Tools'        => '1.000',
         'Lingua::EN::Syllable' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
