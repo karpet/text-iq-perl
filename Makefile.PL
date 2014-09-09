@@ -23,6 +23,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More'           => 0,
         'Search::Tools'        => '1.000',
+        'Text::Aspell'         => 0,
         'Lingua::EN::Syllable' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

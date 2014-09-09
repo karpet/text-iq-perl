@@ -1,5 +1,8 @@
 Revision history for Text-IQ
 
+0.002   08 Sept 2014
+ - require Text::Aspell
+
 0.001   03 Sept 2014
  - First version, released on an unsuspecting world.
 

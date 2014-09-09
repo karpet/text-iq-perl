@@ -1,9 +1,11 @@
-#!perl -T
+#!perl 
 
-use Test::More tests => 1;
+use Test::More;
 
-BEGIN {
-    use_ok( 'Text::IQ' );
-}
+eval "use Text::Aspell";
+plan skip_all => "Text::Aspell unavailable" if $@;
+use_ok( 'Text::IQ' );
 
 diag( "Testing Text::IQ $Text::IQ::VERSION, Perl $], $^X" );
+
+done_testing();

@@ -1,8 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More;
 use Data::Dump qw( dump );
+
+eval "use Text::Aspell";
+plan skip_all => "Text::Aspell unavailable" if $@; 
 
 use_ok('Text::IQ::EN');
 
@@ -31,3 +34,5 @@ is( sprintf( "%0.1f", $iq->kincaid ), "6.7",  "kincaid" );
 #diag( dump $iq->misspelled );
 
 #printf( "Grammar errors: %d\n",      $iq->num_grammar_errors );
+
+done_testing();
