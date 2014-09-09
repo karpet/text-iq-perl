@@ -25,8 +25,8 @@ is( sprintf( "%0.1f", $iq->avg_word_length ), "4.3", "avg_word_length" );
 is( $iq->num_sentences, 1886, "num_sentences" );
 is( sprintf( "%0.1f", $iq->avg_sentence_length ),
     "15.2", "avg_sentence_length" );
-is( $iq->num_misspellings,      548, "num_misspellings" );
-is( $iq->num_uniq_misspellings, 369, "num_uniq_misspellings" );
+is( $iq->num_misspellings,      461, "num_misspellings" );
+is( $iq->num_uniq_misspellings, 294, "num_uniq_misspellings" );
 is( sprintf( "%0.1f", $iq->flesch ),  "73.9", "flesch" );
 is( sprintf( "%0.1f", $iq->fog ),     "8.8",  "fog" );
 is( sprintf( "%0.1f", $iq->kincaid ), "6.7",  "kincaid" );
