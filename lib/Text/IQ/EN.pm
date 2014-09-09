@@ -4,6 +4,8 @@ use warnings;
 use base 'Text::IQ';
 use Lingua::EN::Syllable;
 
+our $VERSION = '0.003';
+
 my %syllable_cache;
 
 =head1 NAME
