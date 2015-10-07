@@ -24,7 +24,7 @@ WriteMakefile(
         'Test::More'           => 0,
         'Search::Tools'        => '1.000',
         'Text::Aspell'         => 0,
-        'Lingua::EN::Syllable' => 0,
+        'Lingua::EN::Syllable' => 0.28,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Text-IQ-*' },

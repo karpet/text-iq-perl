@@ -24,9 +24,9 @@ is( sprintf( "%0.1f", $iq->avg_sentence_length ),
     "13.9", "avg_sentence_length" );
 is( $iq->num_misspellings,      87388, "num_misspellings" );
 is( $iq->num_uniq_misspellings, 8170,  "num_uniq_misspellings" );
-is( sprintf( "%0.1f", $iq->flesch ),  "79.9", "flesch" );
-is( sprintf( "%0.1f", $iq->fog ),     "8.4", "fog" );
-is( sprintf( "%0.1f", $iq->kincaid ), "5.6",  "kincaid" );
+is( sprintf( "%0.1f", $iq->flesch ),  "83.5", "flesch" );
+is( sprintf( "%0.1f", $iq->fog ),     "8.0", "fog" );
+is( sprintf( "%0.1f", $iq->kincaid ), "5.1",  "kincaid" );
 
 #diag( dump $iq->misspelled );
 
