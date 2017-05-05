@@ -6,6 +6,11 @@ use Data::Dump qw( dump );
 
 use_ok('Text::IQ::EN');
 
+# diag Aspell version
+my $checker = Search::Tools::SpellCheck->new( lang => 'en_US', );
+diag "Text::Aspell config:";
+diag dump($checker->aspell->fetch_option_keys);
+
 ok( my $iq = Text::IQ::EN->new('t/doc/bible.txt.gz'), "new IQ" );
 diag sprintf( "Number of words: %d\n",        $iq->num_words );
 diag sprintf( "Avg word length: %0.4f\n",     $iq->avg_word_length );
@@ -22,8 +27,8 @@ is( sprintf( "%0.1f", $iq->avg_word_length ), "4.0", "avg_word_length" );
 is( $iq->num_sentences, 79283, "num_sentences" );
 is( sprintf( "%0.1f", $iq->avg_sentence_length ),
     "13.9", "avg_sentence_length" );
-is( $iq->num_misspellings,      87388, "num_misspellings" );
-is( $iq->num_uniq_misspellings, 8170,  "num_uniq_misspellings" );
+is( $iq->num_misspellings,      87328, "num_misspellings" );
+is( $iq->num_uniq_misspellings, 8156,  "num_uniq_misspellings" );
 is( sprintf( "%0.1f", $iq->flesch ),  "83.5", "flesch" );
 is( sprintf( "%0.1f", $iq->fog ),     "8.0", "fog" );
 is( sprintf( "%0.1f", $iq->kincaid ), "5.1",  "kincaid" );

@@ -4,7 +4,7 @@ use warnings;
 use base 'Text::IQ';
 use Lingua::EN::Syllable;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 my %syllable_cache;
 
