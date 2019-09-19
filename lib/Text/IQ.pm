@@ -22,11 +22,10 @@ Text::IQ - naive intelligence about a body of text
  my $file = 'path/to/file';
  my $iq = Text::IQ::EN->new( $file );
  printf("Number of words: %d\n", $iq->num_words);
- printf("Avg word length: %d\n", $iq->word_length);
+ printf("Avg word length: %d\n", $iq->avg_word_length);
  printf("Number of sentences: %d\n", $iq->num_sentences);
- printf("Avg sentence length: %d\n", $iq->sentence_length);
+ printf("Avg sentence length: %d\n", $iq->avg_sentence_length);
  printf("Misspellings: %d\n", $iq->num_misspellings);
- printf("Grammar errors: %d\n", $iq->num_grammar_errors);
  
  # access internal Search::Tools::TokenList
  my $tokens = $iq->tokens;
